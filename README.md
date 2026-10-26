@@ -1,8 +1,3 @@
-# The new features
-- **Savvy samples loading**: loads only the samples for the instruments requested by Program Change MIDI events
-- **Loading meter**: the gauge indicates SF2 loading progress, so you can be sure that it's working.
-- **Custom partitions**: the project now includes partitions.csv with the optimal layout for the common 16MB flash boards. If you don't have one, you'd better delete this file from your clonned project
-
 # ESP32 SoundFont (SF2) Sampler Synthesizer
 
 An SF2 (SoundFont 2) based wavetable synth designed specifically for the ESP32-S3 / ESP32-P4 microcontrollers. This project leverages the enhanced memory capabilities of the PSRAM equipped MCUs to efficiently load and play SoundFont samples, providing a compact and powerful sampler solution. It's cheap and simple, yet powerful.
@@ -11,14 +6,17 @@ An SF2 (SoundFont 2) based wavetable synth designed specifically for the ESP32-S
 
 ##  About This Fork
 
-This fork builds upon the original project by **Evgeny Aslovskiy (Copych)**, adding **USB MIDI host functionality** that allows the ESP32-S3 to interface directly with USB MIDI devices. MIDI input mode can be changed in config file. ESP32-P4 is not tested.
+This fork builds upon the original project by **Evgeny Aslovskiy (Copych)**, adding **USB MIDI host** (allows the ESP32-S3 to interface directly with USB MIDI devices) and **Bluetooth LE MIDI**. MIDI input mode can be changed in config file. ESP32-P4 is not tested.
 
 ##  Enabling USB MIDI Host on ESP32-S3
 1. **Hardware setup** – Solder the **USB-OTG host pad** on your ESP32-S3 board.
-   
 2. **IDE configuration** – In the **Arduino IDE** select 
    `Tools → USB Mode: “USB-OTG (TinyUSB)”   
 
+## BLE midi 
+
+For now works only with LittleFS setup (has to be select as the main file system in synth.h line 103) and will not work with SD card reader. 
+   
 ## Overview
 
 The ESP32 SF2 Sampler is a sampler firmware that runs on the ESP32S3 / ESP32P4 variants due to their improved PSRAM and memory management compared to the original ESP32. It supports external DACs like the PCM5102 for high-quality audio output and uses the built-in USB hardware of the MCUs to function as a USB MIDI device. By default, the BOOT button of the DevBoard is configured to cycle through SF2 files on the current filesystem. Long press on BOOT button will switch between Flash LittleFS and SD filesystems.
@@ -41,6 +39,11 @@ The ESP32 SF2 Sampler is a sampler firmware that runs on the ESP32S3 / ESP32P4 v
 - **Optional OLED GUI**: Use a rotary encoder and a button to navigate. 
 
 ---
+
+# The new features
+- **Savvy samples loading**: loads only the samples for the instruments requested by Program Change MIDI events
+- **Loading meter**: the gauge indicates SF2 loading progress, so you can be sure that it's working.
+- **Custom partitions**: the project now includes partitions.csv with the optimal layout for the common 16MB flash boards. If you don't have one, you'd better delete this file from your clonned project
 
 ## Hardware Requirements
 
