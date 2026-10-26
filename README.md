@@ -15,7 +15,7 @@ This fork builds upon the original project by **Evgeny Aslovskiy (Copych)**, add
 
 ## BLE midi 
 
-For now works only with LittleFS setup (has to be select as the main file system in synth.h line 103) and will not work with SD card reader. 
+For now works only with LittleFS setup (has to be select as the main file system in synth.h line 103) and will not work with SD card reader. Tested with GUI disabled and no display connected. 
    
 ## Overview
 
