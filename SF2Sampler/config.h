@@ -39,16 +39,17 @@
 #define   USE_USB_MIDI_DEVICE   1     // definition: the synth appears as a USB MIDI Device "S3 SF2 Synth"
 #define   USE_MIDI_STANDARD     2     // definition: the synth receives MIDI messages via serial 31250 bps
 #define   USE_USB_HOST          3     // definition: the synth receives MIDI from USB MIDI keyboard via USB-OTG port
-#define   MIDI_IN_DEV            USE_USB_HOST         // select the appropriate (one of the above) 
-#define   NUM_MIDI_CHANNELS		16
+#define   USE_BLE_MIDI          4     // definition: the synth receives MIDI from BLE MIDI. Use only with LITTLEFS setup
+#define   MIDI_IN_DEV           USE_BLE_MIDI        // select the appropriate (one of the above) 
+#define   NUM_MIDI_CHANNELS		  16
 
 // ===================== SYNTHESIZER ================================================================================
 #define MAX_VOICES_PER_NOTE 2
 #define PITCH_BEND_CENTER 0
 
 //#define ENABLE_IN_VOICE_FILTERS       // comment this out to disable voice SF2 filters
-#define ENABLE_REVERB                 // comment this out to disable reverb 
-#define ENABLE_CHORUS                 // comment this out to disable chorus
+// #define ENABLE_REVERB                 // comment this out to disable reverb 
+// #define ENABLE_CHORUS                 // comment this out to disable chorus
 #define ENABLE_CH_FILTER_M           // uncomment this line to mono per-channel filtering before stereo split
 //#define ENABLE_DELAY                  // comment this out to disable delay
 //#define ENABLE_OVERDRIVE             // comment this out to disable overdrive effect
@@ -144,7 +145,7 @@ static const char* SF2_PATH = "/";
 
 
 // ===================== GUI SETTINGS ==========================================================================
-#define ENABLE_GUI
+//#define ENABLE_GUI
 
 #ifdef ENABLE_GUI
 	// choose the right one according to your hardware setup

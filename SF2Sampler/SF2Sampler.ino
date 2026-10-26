@@ -13,10 +13,12 @@
 * Arduino MIDI library https://github.com/FortySevenEffects/arduino_midi_library
 * ESP32 usb midi host library by Enudenki https://github.com/enudenki/esp32-usb-host-midi-library
 * Optional. Using RGB LEDs requires FastLED library https://github.com/FastLED/FastLED
+* Optional. Arduino BLE-MIDI library by lathoub
 *
 * (c) Copych 2025, License: MIT https://github.com/copych/SF2_Sampler?tab=MIT-1-ov-file#readme
-* This fork by Ledlaux adds USB MIDI host functionality to the original project by Evgeny Aslovskiy (Copych).
-*
+
+* This fork by Ledlaux adds USB midi host and BLE midi functionality 
+
 * More info:
 * https://github.com/copych/SF2_Sampler
 */
@@ -69,6 +71,11 @@ SET_LOOP_TASK_STACK_SIZE(80000);
     #include "src/usbhost/src/UsbMidiHost.h"
 #endif
 
+#if MIDI_IN_DEV == USE_BLE_MIDI
+    #include <BLEMIDI_Transport.h>
+    #include <hardware/BLEMIDI_ESP32.h>
+#endif
+
 #include "i2s_in_out.h" 
 
 // tasks for Core0 and Core1
@@ -91,6 +98,10 @@ uint8_t* g_sd_dma_buf = nullptr;
 
 #if MIDI_IN_DEV == USE_USB_HOST
     USB_MIDI_HOST_CREATE_INSTANCE(usbMidiHost);
+#endif
+
+#if MIDI_IN_DEV == USE_BLE_MIDI
+   BLEMIDI_CREATE_INSTANCE("S3 SF2 Synth", MIDI);
 #endif
 
 // ========================== Global devices ===============================================================================================
@@ -268,8 +279,9 @@ static void IRAM_ATTR control_task(void *userData) {
 
     while (true) { 
         
-#if MIDI_IN_DEV == USE_MIDI_STANDARD || MIDI_IN_DEV == USE_USB_MIDI_DEVICE
+#if MIDI_IN_DEV == USE_MIDI_STANDARD || MIDI_IN_DEV == USE_USB_MIDI_DEVICE || MIDI_IN_DEV == USE_BLE_MIDI
     MIDI.read();
+
 #elif MIDI_IN_DEV == USE_USB_HOST
     usbMidiHost.update();
 #endif
@@ -336,7 +348,7 @@ void setup() {
         while (true) vTaskDelay(1000);
     }
 
-    btStop();
+   // btStop();
 
 #if MIDI_IN_DEV == USE_USB_MIDI_DEVICE
     USB.VID(0x1209);
@@ -353,7 +365,7 @@ void setup() {
     delay(50);
 #endif
 
-#if MIDI_IN_DEV == USE_MIDI_STANDARD || MIDI_IN_DEV == USE_USB_MIDI_DEVICE
+#if MIDI_IN_DEV == USE_MIDI_STANDARD || MIDI_IN_DEV == USE_USB_MIDI_DEVICE || MIDI_IN_DEV == USE_BLE_MIDI
     MIDI.begin(MIDI_CHANNEL_OMNI);
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
@@ -362,7 +374,12 @@ void setup() {
     MIDI.setHandleProgramChange(handleProgramChange);
     MIDI.setHandleSystemExclusive(handleSystemExclusive);
 
-    ESP_LOGI(TAG, "MIDI started");
+    #if MIDI_IN_DEV == USE_BLE_MIDI
+        ESP_LOGI(TAG, "Bluetooth MIDI started");
+    #else
+        ESP_LOGI(TAG, "MIDI started");
+    #endif
+
 #endif
 
 #if MIDI_IN_DEV == USE_USB_HOST
@@ -394,6 +411,8 @@ void setup() {
     gpio_pullup_en((gpio_num_t)SDMMC_CMD);
 
     SD_MMC.setPins(SDMMC_CLK, SDMMC_CMD, SDMMC_D0, SDMMC_D1, SDMMC_D2, SDMMC_D3);
+
+#if MIDI_IN_DEV != USE_BLE_MIDI
  
     ESP_LOGI(TAG, "SDMMC pins set");
     if (!SD_MMC.begin()) {
@@ -404,6 +423,7 @@ void setup() {
         sdmmc_host_get_real_freq(SDMMC_HOST_SLOT_0, &freq);
         ESP_LOGI("", "SD freq: %u kHz", freq);
     }
+#endif
 
     if (!LittleFS.begin(true)) {
         ESP_LOGE(TAG, "LittleFS init failed");
